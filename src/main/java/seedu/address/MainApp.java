@@ -39,8 +39,8 @@ public class MainApp extends Application {
     public static final Version VERSION = new Version(0, 2, 0, true);
     protected Ui ui;
     protected Logic logic;
-    protected Storage storage;
     protected Model model;
+    protected Storage storage;
     protected Config config;
     private static final Logger logger = LogsCenter.getLogger(MainApp.class);
 
