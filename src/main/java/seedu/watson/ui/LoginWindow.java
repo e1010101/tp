@@ -1,6 +1,5 @@
 package seedu.watson.ui;
 
-import java.io.IOException;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -17,6 +16,7 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+
 import seedu.watson.auth.AuthHandler;
 import seedu.watson.commons.core.GuiSettings;
 import seedu.watson.logic.Logic;
