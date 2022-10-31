@@ -1,7 +1,6 @@
 package seedu.watson.ui;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import java.io.IOException;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -9,6 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -28,10 +28,10 @@ public class LoginWindow extends UiPart<Stage> {
 
     private static final String FXML = "Login.fxml";
 
-    private Stage primaryStage;
-    private Logic logic;
+    private final Stage primaryStage;
+    private final Logic logic;
 
-    private LoginErrorWindow loginErrorWindow;
+    private final LoginErrorWindow loginErrorWindow;
 
     /**
      * Creates a {@code LoginWindow} with the given {@code Stage} and {@code Logic}.
@@ -84,37 +84,35 @@ public class LoginWindow extends UiPart<Stage> {
         // Submit button
         Button submit = new Button("Login");
 
-        // Textfield event handler
-        // Setting an action for the Submit button
+        // Button event handler
         submit.setOnAction(
-            new EventHandler<ActionEvent>() {
-                // Dynamically make an event handler for each button
-                @Override
-                public void handle(ActionEvent e) {
-                    if ((nameField.getText() != null && !nameField.getText().isEmpty())
-                        && (passwordField.getText() != null && !passwordField.getText().isEmpty())) {
-                        String nameText = nameField.getText();
-                        String passwordText = passwordField.getText();
-                        if (AuthHandler.checkCredentials(nameText, passwordText)) {
-                            // If the credentials are correct, show the main window
-                            primaryStage.hide();
-                            MainWindow mainWindow = new MainWindow(primaryStage, logic);
-                            mainWindow.show(); //This should be called before creating other UI parts
-                            mainWindow.fillInnerParts();
-                        } else {
-                            // If the credentials are wrong, show an error message
-                            if (!loginErrorWindow.isShowing()) {
-                                loginErrorWindow.show();
-                            } else {
-                                loginErrorWindow.focus();
-                            }
-                        }
-                    } else {
-                        throw new IllegalArgumentException("Password cannot be empty");
-                    }
+            e -> {
+                if ((nameField.getText() != null && !nameField.getText().isEmpty())
+                    && (passwordField.getText() != null && !passwordField.getText()
+                    .isEmpty())) {
+                    String nameText = nameField.getText();
+                    String passwordText = passwordField.getText();
+                    handleLogin(nameText, passwordText);
+                } else {
+                    throw new IllegalArgumentException("Username/Password cannot be empty!");
                 }
             }
         );
+
+        // TextField event handlers
+        passwordField.setOnKeyPressed(ke -> {
+            if (ke.getCode().equals(KeyCode.ENTER)) {
+                if ((nameField.getText() != null && !nameField.getText().isEmpty())
+                    && (passwordField.getText() != null && !passwordField.getText()
+                    .isEmpty())) {
+                    String nameText = nameField.getText();
+                    String passwordText = passwordField.getText();
+                    handleLogin(nameText, passwordText);
+                } else {
+                    throw new IllegalArgumentException("Username/Password cannot be empty!");
+                }
+            }
+        });
 
         // Combining all components
         vb.getChildren().addAll(welcomeHeader, descriptionHeader, imageView,
@@ -128,8 +126,21 @@ public class LoginWindow extends UiPart<Stage> {
         setWindowDefaultSize(logic.getGuiSettings());
     }
 
-    public Stage getPrimaryStage() {
-        return primaryStage;
+    private void handleLogin(String username, String password) {
+        if (AuthHandler.checkCredentials(username, password)) {
+            // If the credentials are correct, show the main window
+            primaryStage.hide();
+            MainWindow mainWindow = new MainWindow(primaryStage, logic);
+            mainWindow.show(); //This should be called before creating other UI parts
+            mainWindow.fillInnerParts();
+        } else {
+            // If the credentials are wrong, show an error message
+            if (!loginErrorWindow.isShowing()) {
+                loginErrorWindow.show();
+            } else {
+                loginErrorWindow.focus();
+            }
+        }
     }
 
     void show() {
